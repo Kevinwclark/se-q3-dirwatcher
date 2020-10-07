@@ -6,6 +6,7 @@ Dirwatcher - A long-running program
 __author__ = "Kevin Clark"
 
 import sys
+import argparse
 
 
 def search_for_magic(filename, start_line, magic_string):
@@ -19,8 +20,9 @@ def watch_directory(path, magic_string, extension, interval):
 
 
 def create_parser():
-    # Your code here
-    return
+    parser = argparse.ArgumentParser(
+        description="Watches specified directory.")
+    return parser
 
 
 def signal_handler(sig_num, frame):
@@ -29,8 +31,14 @@ def signal_handler(sig_num, frame):
 
 
 def main(args):
-    # Your code here
+    """Implementation of dirwatcher"""
+    parser = create_parser()
+    ns = parser.parse_args(args)
+    if not ns:
+        parser.print_usage(args)
+        sys.exit(1)
     return
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])
