@@ -7,7 +7,7 @@ __author__ = "Kevin Clark"
 
 import sys
 import argparse
-import logger
+# import logger
 import signal
 
 
@@ -36,8 +36,11 @@ def watch_directory(path, magic_string, extension, interval):
 
 def create_parser():
     parser = argparse.ArgumentParser(
-        description="Watches specified directory.")
-    # what dir to watch, magic string, extension and interval
+        description="Watches specified directory for magic word.")
+    parser.add_argument('-d', '--directory', help='directory to watch')
+    parser.add_argument('-m', '--magic', help='word to scan directory for')
+    parser.add_argument('-e', '--extension', help='file extension to search')
+    parser.add_argument('-i', '--integer', help='poll int, defaults to 1 sec')
     return parser
 
 
@@ -52,7 +55,7 @@ def signal_handler(sig_num, frame):
     :return None
     """
     # log the associated signal name
-    logger.warn('Received ' + signal.Signals(sig_num).name)
+    # logger.warn('Received ' + signal.Signals(sig_num).name)
     return
 
 
@@ -60,6 +63,8 @@ def main(args):
     """Implementation of dirwatcher"""
     parser = create_parser()
     ns = parser.parse_args(args)
+    print(ns)
+
     if not ns:
         parser.print_usage(args)
         sys.exit(1)
@@ -68,3 +73,4 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv[1:])
+    print(sys.argv[1:])
