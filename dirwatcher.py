@@ -3,7 +3,7 @@
 Dirwatcher - A long-running program
 """
 
-__author__ = "Kevin Clark"
+__author__ = "Kevin Clark with help from JT and Joseph Hafed"
 
 import sys
 import argparse
@@ -16,17 +16,14 @@ dictionary = {} # keys will be filenames and values will be last line read
 
 
 def search_for_magic(filename, start_line, magic_string):
-    print('this fired')
-
+    line_number = 0
     with open(filename) as f:
         lines = f.readlines()
-        num_of_lines = len(lines)
-        for i in range(start_line, num_of_lines):
-            if magic_string in lines[i]:
-                print('word found')
-
-
-search_for_magic('hello/file.txt', 3, 'is')
+    num_of_lines = len(lines)
+    for i in range(start_line, num_of_lines):
+        if magic_string in lines[i]:
+            line_number = i + 1
+    return line_number
 
 
 def scan_single_file():
