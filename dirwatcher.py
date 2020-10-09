@@ -11,9 +11,22 @@ import argparse
 import signal
 
 
+dictionary = {} # keys will be filenames and values will be last line read
+# exit flag
+
+
 def search_for_magic(filename, start_line, magic_string):
-    # Your code here
-    return
+    print('this fired')
+
+    with open(filename) as f:
+        lines = f.readlines()
+        num_of_lines = len(lines)
+        for i in range(start_line, num_of_lines):
+            if magic_string in lines[i]:
+                print('word found')
+
+
+search_for_magic('hello/file.txt', 3, 'is')
 
 
 def scan_single_file():
@@ -29,18 +42,18 @@ def detect_removed_files():
 
 
 def watch_directory(path, magic_string, extension, interval):
-    # os.listdir() is a good way to see the dirs.
-    # os.path.splitext(path) can be used to check for the extension
     return
 
 
 def create_parser():
     parser = argparse.ArgumentParser(
         description="Watches specified directory for magic word.")
-    parser.add_argument('-d', '--directory', help='directory to watch')
-    parser.add_argument('-m', '--magic', help='word to scan directory for')
-    parser.add_argument('-e', '--extension', help='file extension to search')
-    parser.add_argument('-i', '--integer', help='poll int, defaults to 1 sec')
+    parser.add_argument('directory', help='directory to watch')
+    parser.add_argument('magic', help='word to scan directory for')
+    parser.add_argument('-e', '--extension', help='file extension to search',
+                        default='.txt')
+    parser.add_argument('-i', '--integer', help='poll int, defaults to 1 sec',
+                        type=float, default=1.0)
     return parser
 
 
@@ -48,7 +61,7 @@ def signal_handler(sig_num, frame):
     """
     This is a handler for SIGTERM and SIGINT. Other signals
     can be mapped here as well (SIGHUP?)
-    Basically, it just sets a global flag, and main() will
+    Basically, it just sets a global flag, and main() will              
     exit its loop if the signal is trapped.
     :param sig_num: The integer signal number that was trapped from the OS.
     :param frame: Not used
