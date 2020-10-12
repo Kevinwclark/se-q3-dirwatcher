@@ -3,7 +3,7 @@
 Dirwatcher - A long-running program
 """
 
-__author__ = "Kevin Clark with help from JT and Joseph Hafed and Jalal Belsifar"
+__author__ = "Kevin Clark, help from JT and Joseph Hafed and Jalal Belsifar"
 
 import sys
 import argparse
