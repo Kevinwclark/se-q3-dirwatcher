@@ -3,7 +3,7 @@
 Dirwatcher - A long-running program
 """
 
-__author__ = "Kevin Clark with help from JT and Joseph Hafed"
+__author__ = "Kevin Clark with help from JT and Joseph Hafed and Jalal Belsifar"
 
 import sys
 import argparse
@@ -20,6 +20,7 @@ logging.basicConfig(level=logging.INFO,
 
 
 def search_for_magic(path, filename, start_line, magic_string):
+    """Search file for magic word"""
     line_number = start_line
     with open(f'{path}/{filename}') as f:
         lines = f.readlines()
@@ -32,7 +33,7 @@ def search_for_magic(path, filename, start_line, magic_string):
 
 
 def watch_directory(path, magic_string, extension, interval):
-
+    """Track directory files"""
     dictionary = {}
     while not exit_flag:
         time.sleep(interval)
@@ -53,6 +54,7 @@ def watch_directory(path, magic_string, extension, interval):
 
 
 def create_parser():
+    """Parse cmd line args"""
     parser = argparse.ArgumentParser(
         description="Watches specified directory for magic word.")
     parser.add_argument('directory', help='directory to watch')
@@ -65,9 +67,7 @@ def create_parser():
 
 
 def signal_handler(sig_num, frame):
-    """
-    This is a handler for SIGTERM and SIGINT
-    """
+    """This is a handler for SIGTERM and SIGINT"""
     global exit_flag
     exit_flag = True
     logging.warning('Received ' + signal.Signals(sig_num).name)
@@ -75,6 +75,7 @@ def signal_handler(sig_num, frame):
 
 
 def main(args):
+    """Main entry point for program"""
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
