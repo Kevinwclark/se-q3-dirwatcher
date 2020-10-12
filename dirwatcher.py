@@ -11,9 +11,12 @@ import logging
 import signal
 import time
 import os
+import datetime
 
 
 exit_flag = False
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
 
 
 def search_for_magic(path, filename, start_line, magic_string):
@@ -23,42 +26,30 @@ def search_for_magic(path, filename, start_line, magic_string):
     num_of_lines = len(lines)
     for i in range(start_line, num_of_lines):
         if magic_string in lines[i]:
-            print(f'word found in {filename} {i + 1}!')
-            # logging moment here
+            logging.info(f'Magic word found in {filename} on line {i + 1}!')
         line_number = i + 1
     return line_number
 
 
-def detect_removed_files():
-    pass
-
-
 def watch_directory(path, magic_string, extension, interval):
+
     dictionary = {}
     while not exit_flag:
         time.sleep(interval)
-        if os.path.isdir(path):
-            file_list = os.listdir(path)
-            for files in file_list:
-                if files.endswith(extension) and files not in dictionary:
-                    dictionary[files] = 0
-                    print(f'file added {files}')
-                    # logging moment here
-            key = list(dictionary.keys())
-            for k in key:
-                if k not in file_list:
-                    print(f'this file was removed {k}')
-                    dictionary.pop(k)
-                    # logging moment here
-            for key, value in dictionary.items():
-                dictionary[key] = search_for_magic(path, key, value, magic_string)
-            print(dictionary)
-
-        else:
-            print("this path does not exist")
-            dictionary = {}
-        
-    pass
+        file_list = os.listdir(path)
+        for files in file_list:
+            if files.endswith(extension) and files not in dictionary:
+                dictionary[files] = 0
+                logging.info(f'File that matches extension: {files}')
+        key = list(dictionary.keys())
+        for k in key:
+            if k not in file_list:
+                dictionary.pop(k)
+                logging.info(f'This file was removed {k}')
+        for key, value in dictionary.items():
+            dictionary[key] = search_for_magic(
+                path, key, value, magic_string
+                )
 
 
 def create_parser():
@@ -75,13 +66,7 @@ def create_parser():
 
 def signal_handler(sig_num, frame):
     """
-    This is a handler for SIGTERM and SIGINT. Other signals
-    can be mapped here as well (SIGHUP?)
-    Basically, it just sets a global flag, and main() will            
-    exit its loop if the signal is trapped.
-    :param sig_num: The integer signal number that was trapped from the OS.
-    :param frame: Not used
-    :return None
+    This is a handler for SIGTERM and SIGINT
     """
     global exit_flag
     exit_flag = True
@@ -104,22 +89,30 @@ def main(args):
     magic = ns.magic
     ext = ns.extension
     integer = ns.integer
+    start_time = datetime.datetime.now()
+    logging.info(f"""
+    --------------------------------------------------\n
+            Running: dirwatcher.py\n
+            Started on: {start_time}\n
+    --------------------------------------------------\n
+    """)
 
     while not exit_flag:
-        # start_time = time.time()
-        # stop_time when signal is received to stop running. 
-        # then log the start_time - stop_time
         try:
-            print('something')
             watch_directory(path, magic, ext, integer)
-        except FileNotFoundError as err:
-            print('Sorry, this file does not exist')
-            logging.error(err)
-      
-    # final exit point happens here
-    # Log a message that we are shutting down
-    # Include the overall uptime since program start
-    return
+        except OSError:
+            logging.error(f'Not finding this path: {os.path.abspath(path)}')
+        except Exception as e:
+            logging.error(f'{e}')
+        time.sleep(integer)
+    uptime = datetime.datetime.now() - start_time
+
+    logging.info(f"""
+    --------------------------------------------------\n
+            Stop: dirwatcher.py
+            Uptime: {uptime}\n
+    --------------------------------------------------\n
+    """)
 
 
 if __name__ == '__main__':
